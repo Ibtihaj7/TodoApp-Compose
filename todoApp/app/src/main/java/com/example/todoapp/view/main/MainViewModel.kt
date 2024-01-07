@@ -3,8 +3,6 @@ package com.example.todoapp.view.main
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.model.Task

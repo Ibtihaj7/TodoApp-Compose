@@ -26,7 +26,6 @@ import com.example.todoapp.view.main.MainViewModel
 import com.example.todoapp.view.common.HomeSearchBar
 import com.example.todoapp.view.common.ProgressBar
 import com.example.todoapp.view.common.navigation.AppScreens
-import com.example.todoapp.view.common.navigation.screen.Screen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
