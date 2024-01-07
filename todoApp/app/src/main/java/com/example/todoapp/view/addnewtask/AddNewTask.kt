@@ -95,6 +95,8 @@ fun NewTask(navController: NavHostController) {
                 )
             }
 
+            Spacer(modifier = Modifier.weight(1f))
+
             Button(
                 onClick = {
                     val newTask = Task(

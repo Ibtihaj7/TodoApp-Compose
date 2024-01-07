@@ -3,9 +3,11 @@ package com.example.todoapp.view.home
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -48,12 +51,11 @@ fun HomeScreen(
             }
         },
         content = {
-            Column(Modifier.fillMaxHeight()) {
+            Column {
                 Spacer(modifier = Modifier.height(50.dp))
                 if (state.isEmpty()) {
-                    ProgressBar(isDisplayed = true)
+                    Text("There are no tasks to display")
                 } else {
-                    ProgressBar(isDisplayed = false)
                     HomeSearchBar(
                         viewModel,
                         viewModel::updateTaskListWithQuery,
