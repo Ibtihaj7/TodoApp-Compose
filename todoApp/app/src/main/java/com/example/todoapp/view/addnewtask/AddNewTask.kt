@@ -1,27 +1,23 @@
 package com.example.todoapp.view.addnewtask
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,21 +26,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.todoapp.model.Task
 import com.example.todoapp.model.TaskType
 import com.example.todoapp.view.common.appbar.AppBarWithNavigation
+import com.example.todoapp.view.main.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun NewTask(navController: NavHostController) {
+    val viewModel: MainViewModel = hiltViewModel()
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf("") }
@@ -76,13 +76,9 @@ fun NewTask(navController: NavHostController) {
                     .padding(bottom = 8.dp)
             )
 
-            DatePicker(
-                selectedDate = dueDate,
-                onDateSelected = { dueDate = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
+            showDatePicker { selectedDate ->
+                dueDate = selectedDate
+            }
 
             Row(
                 modifier = Modifier
@@ -100,7 +96,19 @@ fun NewTask(navController: NavHostController) {
             }
 
             Button(
-                onClick = { navController.popBackStack() },
+                onClick = {
+                    val newTask = Task(
+                        id = 0,
+                        title = title,
+                        description = description,
+                        dueDate = parseDateString(dueDate),
+                        urgent = taskType == TaskType.ARGENT
+                    )
+
+                    viewModel.addTask(newTask)
+
+                    navController.popBackStack()
+                },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text("Add Task")
@@ -109,71 +117,45 @@ fun NewTask(navController: NavHostController) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DatePicker(
-    selectedDate: String,
-    onDateSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedDateTime by remember { mutableStateOf(LocalDateTime.now()) }
+fun showDatePicker(onDateSelected: (String) -> Unit) {
+    var dueDate by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
-    OutlinedTextField(
-        value = selectedDate,
-        onValueChange = {},
-        label = { Text("Due Date") },
-        trailingIcon = {
-            IconButton(onClick = { expanded = true }) {
-                Icon(imageVector = Icons.Default.DateRange, contentDescription = "Select Date")
-            }
-        },
-        modifier = modifier.clickable { expanded = true }
+    val year: Int
+    val month: Int
+    val day: Int
+
+    val calendar = Calendar.getInstance()
+    year = calendar.get(Calendar.YEAR)
+    month = calendar.get(Calendar.MONTH)
+    day = calendar.get(Calendar.DAY_OF_MONTH)
+    calendar.time = Date()
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            dueDate = "${dayOfMonth}/${month + 1}/${year}"
+            onDateSelected(dueDate)
+        }, year, month, day
     )
 
-    if (expanded) {
-        Dialog(
-            onDismissRequest = { expanded = false },
-            content = {
-                DatePicker(
-                    date = selectedDateTime
-                ) {
-                    selectedDateTime = it
-                    onDateSelected(it.toString())
-                }
-            }
-        )
+    Text(text = dueDate)
+    Spacer(modifier = Modifier.size(16.dp))
+    Button(onClick = {
+        datePickerDialog.show()
+    }) {
+        Text(text = "Open Date Picker")
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun DatePicker(
-    date:  LocalDateTime,
-    onDateChange: (LocalDateTime) -> Unit
-) {
-    CalendarView(
-        dateString = date.toString(),
-        onDateChange = onDateChange
-    )
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun CalendarView(
-    dateString: String,
-    onDateChange: (LocalDateTime) -> Unit
-) {
-    val formatter = DateTimeFormatter.RFC_1123_DATE_TIME
-    val offsetDateTime = runCatching { OffsetDateTime.parse(dateString, formatter) }.getOrNull()
-    val localDateTime = offsetDateTime?.toLocalDateTime()
-
-    DatePicker(
-        date = localDateTime ?: LocalDateTime.now(),
-        onDateChange = { pickedDate ->
-            onDateChange(pickedDate)
-        }
-    )
+private fun parseDateString(dateString: String): Date {
+    val formatter = DateTimeFormatter.ofPattern("d/M/yyyy")
+    val localDate = LocalDate.parse(dateString, formatter)
+    val zoneId = ZoneId.systemDefault()
+    val offsetDateTime = localDate.atStartOfDay().atZone(zoneId).toOffsetDateTime()
+    return Date.from(offsetDateTime.toInstant())
 }
 
 @Composable

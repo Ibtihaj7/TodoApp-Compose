@@ -54,6 +54,10 @@ class MainViewModel @Inject constructor(
         tasksRepo.deleteTask(task)
     }
 
+    fun addTask(task: Task)=viewModelScope.launch {
+        tasksRepo.addNewTask(task)
+    }
+
     fun updateTaskListWithQuery(query: String?) {
         viewModelScope.launch {
             tasksRepo.getAllTasks()
