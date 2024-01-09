@@ -12,7 +12,6 @@ class DatabaseRepositoryImpl @Inject constructor(
     override suspend fun insertNewTask(task: Task) = dao.insertNewTask(task)
     override suspend fun deleteTask(task: Task) = dao.deleteTask(task)
     override fun getAllTasks() = dao.getTasks()
-    override fun getCompletedTasks() = dao.getCompletedTasks()
     override suspend fun updateTask(task: Task) = dao.updateTask(task)
     override suspend fun getTasksWithDueDateUpcoming(): List<Task>{
         val currentDateInMillis = System.currentTimeMillis()

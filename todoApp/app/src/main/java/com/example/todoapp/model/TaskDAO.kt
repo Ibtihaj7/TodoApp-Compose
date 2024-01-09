@@ -18,8 +18,6 @@ interface TaskDAO {
     suspend fun deleteTask(task: Task)
     @Query("SELECT * FROM $TASKS_TABLE")
     fun getTasks(): Flow<List<Task>>
-    @Query("SELECT * FROM $TASKS_TABLE WHERE isCompleted = 1")
-    fun getCompletedTasks(): Flow<List<Task>>
     @Update
     suspend fun updateTask(task: Task)
     @Query("SELECT * FROM $TASKS_TABLE WHERE dueDate >= :currentDate")

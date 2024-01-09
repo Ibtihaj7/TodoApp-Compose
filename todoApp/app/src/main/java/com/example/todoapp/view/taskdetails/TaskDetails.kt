@@ -78,7 +78,7 @@ fun TaskDetailsView(task: Task?, mainViewModel: MainViewModel, navController: Na
             color = Color(LocalContext.current.getColor(R.color.colorBackground)),
             onButtonClicked = {
                 mainViewModel.onCompletedChanged(task!!)
-                isCompletes = task.isCompleted
+                isCompletes = !isCompletes
             },
             textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
         )
