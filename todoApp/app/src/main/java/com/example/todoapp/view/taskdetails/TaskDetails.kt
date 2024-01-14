@@ -1,8 +1,6 @@
 package com.example.todoapp.view.taskdetails
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,21 +32,14 @@ import com.example.todoapp.model.Task
 import com.example.todoapp.view.common.appbar.AppBarWithNavigation
 import com.example.todoapp.view.main.MainViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskDetails(
-    taskId: Int,
     navController: NavHostController = rememberNavController(),
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val viewModel: TaskDetailsViewModel = hiltViewModel()
     val task by viewModel.state.collectAsState()
-    var isCompletes by rememberSaveable { mutableStateOf(true) }
-
-    LaunchedEffect(isCompletes) {
-        viewModel.getTask(taskId = taskId)
-    }
 
     Scaffold(
         topBar = { AppBarWithNavigation(title = "Task Details", navController =navController) },
@@ -59,7 +49,7 @@ fun TaskDetails(
 
                 Text("id: ${task?.id}", modifier = Modifier.padding(10.dp).padding(top = 55.dp))
                 Text("title: ${task?.title}", modifier = Modifier.padding(10.dp))
-                Text("description: ${task?.description}", modifier = Modifier.padding(10.dp) )
+                Text("description: ${task?.description}", modifier = Modifier.padding(10.dp))
                 Text("completed: ${task?.isCompleted}", modifier = Modifier.padding(10.dp))
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -68,8 +58,7 @@ fun TaskDetails(
                     text = if (task?.isCompleted==true) "Make it incomplete" else "Make it complete",
                     color = Color(LocalContext.current.getColor(R.color.colorBackground)),
                     onButtonClicked = {
-                        mainViewModel.onCompletedChanged(task!!)
-                        isCompletes = !isCompletes
+                        viewModel.onCompletedClicked(task?.isCompleted!=true)
                     },
                     textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
                 )
@@ -99,7 +88,6 @@ fun TaskDetails(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TaskDetailsButton(
     text: String,

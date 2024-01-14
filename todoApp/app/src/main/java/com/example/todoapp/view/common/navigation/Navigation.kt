@@ -1,7 +1,5 @@
 package com.example.todoapp.view.common.navigation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -18,7 +16,6 @@ import com.example.todoapp.view.home.HomeScreen
 import com.example.todoapp.view.common.navigation.screen.Screen
 import com.example.todoapp.view.taskdetails.TaskDetails
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(navController: NavHostController) {
     val mainViewModel: MainViewModel = hiltViewModel()
@@ -40,7 +37,6 @@ fun Navigation(navController: NavHostController) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.addNewTaskNavGraph(navController: NavHostController) {
     navigation(
         route = Screen.AddNewTaskScreen.route,
@@ -52,7 +48,6 @@ fun NavGraphBuilder.addNewTaskNavGraph(navController: NavHostController) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
         route = Screen.TaskDetailsScreen.route,
@@ -65,9 +60,8 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                     type = NavType.IntType
                 }
             )
-        ) { backStackEntry ->
-            val taskId = backStackEntry.arguments?.getInt("taskId") ?: -1
-            TaskDetails(taskId,navController)
+        ) {
+            TaskDetails(navController)
         }
     }
 }
