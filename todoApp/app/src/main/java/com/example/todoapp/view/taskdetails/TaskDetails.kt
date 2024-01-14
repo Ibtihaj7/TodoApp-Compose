@@ -33,7 +33,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.todoapp.R
 import com.example.todoapp.model.Task
 import com.example.todoapp.view.common.appbar.AppBarWithNavigation
-import com.example.todoapp.view.home.MessageText
 import com.example.todoapp.view.main.MainViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -45,65 +44,59 @@ fun TaskDetails(
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val viewModel: TaskDetailsViewModel = hiltViewModel()
-    val state by viewModel.state.collectAsState()
+    val task by viewModel.state.collectAsState()
+    var isCompletes by rememberSaveable { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isCompletes) {
         viewModel.getTask(taskId = taskId)
     }
 
     Scaffold(
         topBar = { AppBarWithNavigation(title = "Task Details", navController =navController) },
         content = {
-            TaskDetailsView(state, mainViewModel, navController)
+            Column(modifier = Modifier.fillMaxSize()) {
+                var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
+
+                Text("id: ${task?.id}", modifier = Modifier.padding(10.dp).padding(top = 55.dp))
+                Text("title: ${task?.title}", modifier = Modifier.padding(10.dp))
+                Text("description: ${task?.description}", modifier = Modifier.padding(10.dp) )
+                Text("completed: ${task?.isCompleted}", modifier = Modifier.padding(10.dp))
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                TaskDetailsButton(
+                    text = if (task?.isCompleted==true) "Make it incomplete" else "Make it complete",
+                    color = Color(LocalContext.current.getColor(R.color.colorBackground)),
+                    onButtonClicked = {
+                        mainViewModel.onCompletedChanged(task!!)
+                        isCompletes = !isCompletes
+                    },
+                    textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
+                )
+
+                TaskDetailsButton(
+                    text = "Delete Task",
+                    color = Color(LocalContext.current.getColor(R.color.highPriority)),
+                    onButtonClicked = { showConfirmationDialog = true },
+                )
+
+                if (showConfirmationDialog) {
+                    ConfirmationPrompt(
+                        onDismissRequest = { showConfirmationDialog = false },
+                        onConfirmation = {
+                            mainViewModel.deleteTask(it)
+                            showConfirmationDialog = false
+
+                            navController.popBackStack()
+                        },
+                        dialogTitle = "Delete Task",
+                        dialogText = "Are you sure you want to delete task",
+                        task = task!!
+                    )
+                }
+            }
         }
     )
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun TaskDetailsView(task: Task?, mainViewModel: MainViewModel, navController: NavHostController) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        var isCompletes by rememberSaveable { mutableStateOf(task?.isCompleted ?: false) }
-        var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
-
-        MessageText("id: ${task?.id}", modifier = Modifier.padding(10.dp).padding(top = 55.dp))
-        MessageText("title: ${task?.title}")
-        MessageText("description: ${task?.description}" )
-        MessageText("is completed: $isCompletes")
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        TaskDetailsButton(
-            text = if (isCompletes) "Make it incomplete" else "Make it complete",
-            color = Color(LocalContext.current.getColor(R.color.colorBackground)),
-            onButtonClicked = {
-                mainViewModel.onCompletedChanged(task!!)
-                isCompletes = !isCompletes
-            },
-            textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
-        )
-
-        TaskDetailsButton(
-            text = "Delete Task",
-            color = Color(LocalContext.current.getColor(R.color.highPriority)),
-            onButtonClicked = { showConfirmationDialog = true },
-        )
-
-        if (showConfirmationDialog) {
-            ConfirmationPrompt(
-                onDismissRequest = { showConfirmationDialog = false },
-                onConfirmation = {
-                    mainViewModel.deleteTask(it)
-                    showConfirmationDialog = false
-
-                    navController.popBackStack()
-                },
-                dialogTitle = "Delete Task",
-                dialogText = "Are you sure you want to delete task",
-                task = task!!
-            )
-        }
-    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -73,8 +73,3 @@ fun HomeScreen(
         }
     )
 }
-
-@Composable
-fun MessageText(message: String, modifier: Modifier = Modifier.padding(10.dp)) {
-    Text(text =message,modifier = modifier)
-}
