@@ -2,8 +2,6 @@ package com.example.todoapp.view.addnewtask
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,18 +31,16 @@ import androidx.navigation.NavHostController
 import com.example.todoapp.model.Task
 import com.example.todoapp.model.TaskType
 import com.example.todoapp.view.common.appbar.AppBarWithNavigation
-import com.example.todoapp.view.main.MainViewModel
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 
-@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun NewTask(navController: NavHostController) {
-    val viewModel: MainViewModel = hiltViewModel()
+    val viewModel: NewTaskViewModel = hiltViewModel()
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf("") }
@@ -151,7 +147,6 @@ fun showDatePicker(onDateSelected: (String) -> Unit) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun parseDateString(dateString: String): Date {
     val formatter = DateTimeFormatter.ofPattern("d/M/yyyy")
     val localDate = LocalDate.parse(dateString, formatter)

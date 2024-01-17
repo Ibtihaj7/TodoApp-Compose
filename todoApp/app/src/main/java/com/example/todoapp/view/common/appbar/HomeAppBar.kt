@@ -1,8 +1,6 @@
 package com.example.todoapp.view.common.appbar
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +12,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,7 +30,6 @@ import com.example.todoapp.utils.Constant.PAST_DUE_TITLE
 import com.example.todoapp.utils.Constant.UPCOMING_TITLE
 import com.example.todoapp.view.main.MainViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CustomAppBar(viewModel:MainViewModel) {
     Row(modifier = Modifier.fillMaxWidth()) {
@@ -48,7 +46,6 @@ fun CustomAppBar(viewModel:MainViewModel) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppBarActions(viewModel:MainViewModel) {
     var showFilterBottomSheet by remember { mutableStateOf(false) }
@@ -56,7 +53,7 @@ fun AppBarActions(viewModel:MainViewModel) {
     FilterAction { showFilterBottomSheet = true }
 
     if (showFilterBottomSheet) {
-        FilterBottomSheet(onDismiss = { showFilterBottomSheet = false },viewModel)
+        FilterBottomSheet( onDismiss = { showFilterBottomSheet = false },viewModel )
     }
 }
 
@@ -67,36 +64,37 @@ fun FilterAction(onClick: () -> Unit) {
     }) {
         Icon(
             painter = painterResource(id = R.drawable.filter),
-            contentDescription = "Search",
+            contentDescription = "Filter",
             tint = Color.White
         )
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(onDismiss: () -> Unit,viewModel: MainViewModel) {
+    val selectedFilter by viewModel.selectedFilter.collectAsState()
+
+    val upcomingImgResId= if(selectedFilter == UPCOMING_TITLE) R.drawable.ic_green_checked else R.drawable.ic_gray_checked
+    val pastDueImgResId= if(selectedFilter == PAST_DUE_TITLE) R.drawable.ic_green_checked else R.drawable.ic_gray_checked
+    val allTasksImgResId= if(selectedFilter == ALL_TASKS_TITLE) R.drawable.ic_green_checked else R.drawable.ic_gray_checked
+
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        FilterTypeCostume(UPCOMING_TITLE) { viewModel.upcomingClicked() }
-        FilterTypeCostume(PAST_DUE_TITLE) { viewModel.pastDueClicked() }
-        FilterTypeCostume(ALL_TASKS_TITLE) { viewModel.allTasksClicked() }
+        FilterTypeCostume(UPCOMING_TITLE,upcomingImgResId) { viewModel.upcomingClicked()}
+        FilterTypeCostume(PAST_DUE_TITLE,pastDueImgResId) { viewModel.pastDueClicked() }
+        FilterTypeCostume(ALL_TASKS_TITLE,allTasksImgResId) { viewModel.allTasksClicked() }
     }
 }
 
 @Composable
-fun FilterTypeCostume(title:String,onItemClicked:()->Unit){
-    val img = R.drawable.ic_green_checked
+fun FilterTypeCostume(title:String,imgResId: Int,onItemClicked:()->Unit){
     Row (
         modifier = Modifier
-            .padding(10.dp)
-            .clickable {
-                Log.d("main","clicked")
-                onItemClicked()
-            },
+            .padding(bottom = 25.dp)
+            .clickable { onItemClicked() },
         verticalAlignment = Alignment.CenterVertically
     ){
-        Icon(modifier = Modifier.padding(10.dp),painter = painterResource(img), contentDescription = title)
+        Image(modifier = Modifier.padding(10.dp),painter = painterResource(imgResId), contentDescription = title)
 
         Text(
             modifier = Modifier.fillMaxWidth(),

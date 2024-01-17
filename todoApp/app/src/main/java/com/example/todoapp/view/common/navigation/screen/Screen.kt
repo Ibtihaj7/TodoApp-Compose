@@ -9,6 +9,7 @@ sealed class Screen(val route:String, val title:String, val icon:ImageVector? = 
     data object MainScreen : Screen("all_tasks","Home", Icons.Default.Home)
     data object CompletedTasksScreen : Screen("completed_tasks","Completed",Icons.Default.Check)
 
+    data object Home : Screen("Home","Home")
     data object TaskDetailsScreen : Screen("task_details","Task Details")
     data object AddNewTaskScreen : Screen("add_new_task","Add New Task")
 }

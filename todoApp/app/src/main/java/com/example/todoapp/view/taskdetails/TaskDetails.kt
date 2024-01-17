@@ -1,6 +1,7 @@
 package com.example.todoapp.view.taskdetails
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -36,32 +40,24 @@ import com.example.todoapp.view.main.MainViewModel
 @Composable
 fun TaskDetails(
     navController: NavHostController = rememberNavController(),
-    mainViewModel: MainViewModel = hiltViewModel()
+    mainViewModel: MainViewModel
 ) {
     val viewModel: TaskDetailsViewModel = hiltViewModel()
     val task by viewModel.state.collectAsState()
 
+    Text("title: ${task?.title}", modifier = Modifier.padding(10.dp))
+
     Scaffold(
-        topBar = { AppBarWithNavigation(title = "Task Details", navController =navController) },
+        topBar = { AppBarWithNavigation(title = "${task?.title}", navController =navController) },
         content = {
+
             Column(modifier = Modifier.fillMaxSize()) {
                 var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
 
-                Text("id: ${task?.id}", modifier = Modifier.padding(10.dp).padding(top = 55.dp))
-                Text("title: ${task?.title}", modifier = Modifier.padding(10.dp))
-                Text("description: ${task?.description}", modifier = Modifier.padding(10.dp))
-                Text("completed: ${task?.isCompleted}", modifier = Modifier.padding(10.dp))
+                Log.d("TaskDetails", "Inside Column recomposed")
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                TaskDetailsButton(
-                    text = if (task?.isCompleted==true) "Make it incomplete" else "Make it complete",
-                    color = Color(LocalContext.current.getColor(R.color.colorBackground)),
-                    onButtonClicked = {
-                        viewModel.onCompletedClicked(task?.isCompleted!=true)
-                    },
-                    textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
-                )
+                Text("completed", modifier = Modifier.padding(10.dp))
+                ComposableTest(task)
 
                 TaskDetailsButton(
                     text = "Delete Task",
@@ -86,6 +82,32 @@ fun TaskDetails(
             }
         }
     )
+}
+
+@Composable
+fun ComposableTest(task:Task?) {
+    Column {
+        var res by remember {
+            mutableStateOf(false)
+        }
+        Text("id: ${task?.id}", modifier = Modifier.padding(10.dp).padding(top = 55.dp))
+        Text("title: ${task?.title}", modifier = Modifier.padding(10.dp))
+        Text("description: ${task?.description}", modifier = Modifier.padding(10.dp))
+        Text("res: $res", modifier = Modifier.padding(10.dp))
+
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        TaskDetailsButton(
+            text = if (task?.isCompleted==true) "Make it incomplete" else "Make it complete",
+            color = Color(LocalContext.current.getColor(R.color.colorBackground)),
+            onButtonClicked = {
+                res = !res
+//                            viewModel.onCompletedClicked(task?.isCompleted!=true)
+            },
+            textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
+        )
+    }
 }
 
 @Composable

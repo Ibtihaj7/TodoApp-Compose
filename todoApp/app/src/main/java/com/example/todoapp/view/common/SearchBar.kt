@@ -1,8 +1,5 @@
 package com.example.todoapp.view.common
 
-import android.os.Build
-import android.os.Handler
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,7 +18,6 @@ import com.example.todoapp.model.Task
 import com.example.todoapp.view.home.TaskList
 import com.example.todoapp.view.main.MainViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeSearchBar(
@@ -33,14 +29,6 @@ fun HomeSearchBar(
     val timeOfDelay = 2000L
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var handler by remember { mutableStateOf(Handler()) }
-
-    LaunchedEffect(text) {
-        handler.removeCallbacksAndMessages(null)
-        handler.postDelayed({
-            onQueryChange(text)
-        }, timeOfDelay)
-    }
 
     SearchBar(
         modifier = Modifier
@@ -49,10 +37,7 @@ fun HomeSearchBar(
         query = text,
         onQueryChange = {
             text = it
-            handler.removeCallbacksAndMessages(null)
-            handler.postDelayed({
-                onQueryChange(text)
-            }, timeOfDelay)
+            viewModel.handleQueryChange(text, onQueryChange, timeOfDelay)
         },
         onSearch = {
             active = false
