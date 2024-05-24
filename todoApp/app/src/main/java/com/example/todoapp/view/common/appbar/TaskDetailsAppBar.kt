@@ -9,14 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.todoapp.R
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +27,7 @@ fun AppBarWithNavigation(title:String,navController: NavHostController) {
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(LocalContext.current.getColor(R.color.colorPrimary))
+            containerColor = MaterialTheme.colorScheme.primary
         )
     )
 }

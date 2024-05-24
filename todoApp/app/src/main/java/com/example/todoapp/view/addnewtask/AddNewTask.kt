@@ -1,20 +1,23 @@
 package com.example.todoapp.view.addnewtask
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Scaffold
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -45,45 +50,44 @@ fun NewTask(navController: NavHostController) {
     var taskType by remember { mutableStateOf(TaskType.OTHERS) }
 
     Scaffold(
-        topBar = { AppBarWithNavigation("Add New Task", navController) }
+        topBar = {
+            AppBarWithNavigation(
+                title = "Add New Task",
+                navController = navController
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
+                .padding(10.dp)
                 .fillMaxSize()
         ) {
-            TextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Title") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
+            NewTaskTextField(
+                textValue = title,
+                labelText = "Title"
+            ) { title = it }
 
-            TextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
+            NewTaskTextField(
+                textValue = description,
+                labelText = "Description"
+            ) { description = it }
 
-            showDatePicker { selectedDate ->
+            DatePicker { selectedDate ->
                 dueDate = selectedDate
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Type:")
+                Text("Type")
                 Spacer(modifier = Modifier.width(16.dp))
 
                 RadioGroup(
-                    options = TaskType.values().toList(),
+                    options = TaskType.entries,
                     selectedOption = taskType,
                     onOptionSelected = { taskType = it }
                 )
@@ -105,7 +109,19 @@ fun NewTask(navController: NavHostController) {
 
                     navController.popBackStack()
                 },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+                    .background(
+                        shape = RoundedCornerShape(10.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent,
+                )
             ) {
                 Text("Add Task")
             }
@@ -114,7 +130,23 @@ fun NewTask(navController: NavHostController) {
 }
 
 @Composable
-fun showDatePicker(onDateSelected: (String) -> Unit) {
+fun NewTaskTextField(
+    textValue: String,
+    labelText: String,
+    onValueChanged: (String) -> Unit
+) {
+    TextField(
+        value = textValue,
+        onValueChange = onValueChanged,
+        label = { Text(labelText) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    )
+}
+
+@Composable
+fun DatePicker(onDateSelected: (String) -> Unit) {
     var dueDate by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -136,13 +168,21 @@ fun showDatePicker(onDateSelected: (String) -> Unit) {
         }, year, month, day
     )
 
-    Text(text = dueDate)
-    Spacer(modifier = Modifier.size(16.dp))
-    Button(
-        onClick = {
-            datePickerDialog.show()
-        }) {
-        Text(text = "Open Date Picker")
+    Row (
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        TextButton(
+            onClick = {
+                datePickerDialog.show()
+            }) {
+            Text(
+                text = "Open Date Picker",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
+            )
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(text = dueDate)
     }
 }
 
@@ -170,8 +210,8 @@ fun RadioGroup(
                 selected = option == selectedOption,
                 onClick = { onOptionSelected(option) },
                 colors = RadioButtonDefaults.colors(
-                    selectedColor = MaterialTheme.colors.primary,
-                    unselectedColor = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+                    selectedColor = MaterialTheme.colorScheme.primary,
+                    unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                 )
             )
             Text(

@@ -52,13 +52,10 @@ fun TaskDetails(
             ) {
                 var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
 
-                Text("completed", modifier = Modifier.padding(10.dp))
-                ComposableTest(task)
-
-                TaskDetailsButton(
-                    text = "Delete Task",
-                    color = Color(LocalContext.current.getColor(R.color.highPriority)),
-                    onButtonClicked = { showConfirmationDialog = true },
+                ComposableTest(
+                    viewModel = viewModel,
+                    task = task,
+                    onDeleteTask = { showConfirmationDialog = true }
                 )
 
                 if (showConfirmationDialog) {
@@ -81,25 +78,36 @@ fun TaskDetails(
 }
 
 @Composable
-fun ComposableTest(task:Task?) {
+fun ComposableTest(
+    viewModel: TaskDetailsViewModel,
+    task:Task?,
+    onDeleteTask:()->Unit,
+) {
     Column {
         var res by remember {
-            mutableStateOf(false)
+            mutableStateOf(task?.isCompleted ?: false)
         }
-        Text("id: ${task?.id}", modifier = Modifier.padding(10.dp).padding(top = 55.dp))
         Text("title: ${task?.title}", modifier = Modifier.padding(10.dp))
         Text("description: ${task?.description}", modifier = Modifier.padding(10.dp))
-        Text("res: $res", modifier = Modifier.padding(10.dp))
+        Text("complete: ${task?.isCompleted}", modifier = Modifier.padding(10.dp))
 
 
         Spacer(modifier = Modifier.weight(1f))
+
+        TaskDetailsButton(
+            text = "Delete Task",
+            color = Color(LocalContext.current.getColor(R.color.highPriority)),
+            onButtonClicked = onDeleteTask ,
+        )
 
         TaskDetailsButton(
             text = if (task?.isCompleted==true) "Make it incomplete" else "Make it complete",
             color = Color(LocalContext.current.getColor(R.color.colorBackground)),
             onButtonClicked = {
                 res = !res
-//                            viewModel.onCompletedClicked(task?.isCompleted!=true)
+                if(task != null){
+                    viewModel.onCompletedClicked(!res)
+                }
             },
             textColor = Color(LocalContext.current.getColor(R.color.taskCompleted))
         )
@@ -116,7 +124,7 @@ fun TaskDetailsButton(
     OutlinedButton(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp),
+            .height(55.dp),
         shape = RoundedCornerShape(0.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = color,
