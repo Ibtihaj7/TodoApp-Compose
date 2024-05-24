@@ -1,6 +1,5 @@
 package com.example.todoapp.view.addnewtask
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +36,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun NewTask(navController: NavHostController) {
     val viewModel: NewTaskViewModel = hiltViewModel()
@@ -48,10 +46,10 @@ fun NewTask(navController: NavHostController) {
 
     Scaffold(
         topBar = { AppBarWithNavigation("Add New Task", navController) }
-    ) {
+    ) { padding ->
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(padding)
                 .fillMaxSize()
         ) {
             TextField(
@@ -140,9 +138,10 @@ fun showDatePicker(onDateSelected: (String) -> Unit) {
 
     Text(text = dueDate)
     Spacer(modifier = Modifier.size(16.dp))
-    Button(onClick = {
-        datePickerDialog.show()
-    }) {
+    Button(
+        onClick = {
+            datePickerDialog.show()
+        }) {
         Text(text = "Open Date Picker")
     }
 }

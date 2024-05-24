@@ -1,6 +1,5 @@
 package com.example.todoapp.view.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,13 +18,12 @@ import com.example.todoapp.model.Task
 import com.example.todoapp.model.TaskCategory
 import com.example.todoapp.view.common.CardContent
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskList(tasksCategory: List<TaskCategory>, onTaskChecked: (task: Task) -> Unit, onItemClick: (taskId: Int) -> Unit) {
     LazyColumn {
         tasksCategory.forEach { category ->
-            stickyHeader {
-                TitleHeader(category.name)
+            item {
+                TitleHeader(title = category.name)
             }
             items(category.items) { task ->
                 TaskItem(task, onTaskChecked) { onItemClick(task.id) }

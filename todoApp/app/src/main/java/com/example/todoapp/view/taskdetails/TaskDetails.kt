@@ -1,7 +1,5 @@
 package com.example.todoapp.view.taskdetails
 
-import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,8 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -36,7 +32,6 @@ import com.example.todoapp.model.Task
 import com.example.todoapp.view.common.appbar.AppBarWithNavigation
 import com.example.todoapp.view.main.MainViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskDetails(
     navController: NavHostController = rememberNavController(),
@@ -50,11 +45,12 @@ fun TaskDetails(
     Scaffold(
         topBar = { AppBarWithNavigation(title = "${task?.title}", navController =navController) },
         content = {
-
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
                 var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
-
-                Log.d("TaskDetails", "Inside Column recomposed")
 
                 Text("completed", modifier = Modifier.padding(10.dp))
                 ComposableTest(task)

@@ -1,6 +1,5 @@
 package com.example.todoapp.view.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -17,20 +16,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.todoapp.view.common.appbar.CustomAppBar
-import com.example.todoapp.view.main.MainViewModel
+import com.example.todoapp.view.common.EmptyTasksScreen
 import com.example.todoapp.view.common.HomeSearchBar
+import com.example.todoapp.view.common.appbar.CustomAppBar
 import com.example.todoapp.view.common.navigation.AppScreens
+import com.example.todoapp.view.main.MainViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    viewModel: MainViewModel ,
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel,
     navController: NavHostController
-    ) {
+) {
     val state by viewModel.tasksList.collectAsState()
     Scaffold(
-        modifier=Modifier.padding(bottom = 50.dp),
+        modifier = modifier.padding(bottom = 50.dp),
         topBar = { CustomAppBar(viewModel) },
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -40,7 +40,7 @@ fun HomeScreen(
             }
         },
         content = {
-            Column {
+            Column (Modifier.padding(it)){
                 Spacer(modifier = Modifier.height(50.dp))
                 HomeSearchBar(
                     viewModel,
@@ -49,7 +49,7 @@ fun HomeScreen(
                     state
                 )
                 if (state.isEmpty()) {
-                    Text("There are no tasks to display")
+                    EmptyTasksScreen()
                 } else {
                     val tasksCategory = viewModel.retrieveTaskCategories(state)
                     TaskList(tasksCategory, { task ->

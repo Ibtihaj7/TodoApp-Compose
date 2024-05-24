@@ -3,6 +3,7 @@ package com.example.todoapp.view.common
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -47,7 +48,7 @@ fun CardContent(task: Task, onTaskChecked:(task:Task) -> Unit) {
         IconButton(onClick = {
             onTaskChecked(task)
         }) {
-            Icon(
+            Image(
                 painter = if(task.isCompleted) painterResource(R.drawable.ic_completed) else painterResource(
                     R.drawable.ic_not_completed) ,
                 contentDescription = ""
